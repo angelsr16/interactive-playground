@@ -1,5 +1,11 @@
 import { getGridIndexFromRowAndCol } from "../../../lib/canvas";
 import { WALL_CELL } from "../constants/constants";
+import type {
+  Heuristic,
+  MovementType,
+  Velocity,
+} from "../models/SearchOptions";
+import { euclideanDistance, manhattanDistance } from "./heuristic";
 
 export const isCellValid = (
   row: number,
@@ -38,4 +44,55 @@ export const isDiagonalMoveValid = (
   }
 
   return true;
+};
+
+export const getVelocity = (velocity: Velocity): number => {
+  switch (velocity) {
+    case "slow":
+      return 15;
+    case "normal":
+      return 10;
+    case "fast":
+      return 1;
+    case "instant":
+      return 0;
+  }
+};
+
+export const getDirections = (direction: MovementType): number[][] => {
+  switch (direction) {
+    case "4dir":
+      return [
+        [0, 1],
+        [0, -1],
+        [1, 0],
+        [-1, 0],
+      ];
+    case "8dir":
+      return [
+        [0, 1],
+        [0, -1],
+        [1, 0],
+        [-1, 0],
+        [1, 1],
+        [1, -1],
+        [-1, -1],
+        [-1, 1],
+      ];
+  }
+};
+
+export const getHeuristic = (
+  row: number,
+  col: number,
+  target: number,
+  gridSize: number,
+  heuristic: Heuristic,
+): number => {
+  switch (heuristic) {
+    case "euclidean":
+      return euclideanDistance(row, col, target, gridSize);
+    case "manhattan":
+      return manhattanDistance(row, col, target, gridSize);
+  }
 };

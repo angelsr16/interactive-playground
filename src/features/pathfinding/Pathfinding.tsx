@@ -13,9 +13,22 @@ import { useMazeGenerator, type MazeGenerator } from "./hooks/useMazeGenerator";
 import { usePathfinding } from "./hooks/usePathfinding";
 import type { Cell } from "./models/Cell";
 import { sleep } from "../../lib/helpers";
+import type {
+  Heuristic,
+  MovementType,
+  SearchOptions,
+  Velocity,
+} from "./models/SearchOptions";
+import { getVelocity } from "./lib/helpers";
 
 export const Pathfinding = () => {
   const [mazeTheme, setMazeTheme] = useState<MazeTheme>(DEFAULT_THEME);
+  const [searchOptions, setSearchOptions] = useState<SearchOptions>({
+    heuristic: "manhattan",
+    movements: "4dir",
+    searchAlgorithm: "aStar",
+    velocity: "normal",
+  });
 
   const {
     grid,
@@ -28,7 +41,7 @@ export const Pathfinding = () => {
     updateCell,
     startIndex,
     endIndex,
-  } = useLogicalGrid(25);
+  } = useLogicalGrid(20);
 
   const { generateMaze, mazeGeneratorAlgorithm, setMazeGeneratorAlgorithm } =
     useMazeGenerator({ gridSize });
@@ -44,7 +57,7 @@ export const Pathfinding = () => {
   };
 
   const handleSearchPath = async () => {
-    const cell = await searchPath(startIndex, endIndex);
+    const cell = await searchPath(startIndex, endIndex, searchOptions);
 
     if (!cell) return;
 
@@ -52,14 +65,14 @@ export const Pathfinding = () => {
 
     while (currentCell) {
       updateCell(currentCell.index, PATH_CELL);
-      await sleep(10);
+      await sleep(getVelocity(searchOptions.velocity));
       currentCell = currentCell.parent;
     }
   };
 
   return (
     <div className="w-full flex flex-col gap-5">
-      <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-10 px-10">
+      <div className="w-full grid lg:grid-cols-2 grid-cols-1 gap-10 px-10">
         <div className="w-full aspect-square">
           <PlaygroundCanvas
             grid={grid}
@@ -136,28 +149,90 @@ export const Pathfinding = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label htmlFor="mazeAlgorithm">Algoritmo de búsqueda</label>
-            <div className="flex gap-5">
-              <select
-                id="mazeAlgorithm"
-                className="flex-1 custom-input"
-                value={searchAlgorithm}
-                onChange={(evt) => setSearchAlgorithm(evt.target.value)}
-                name="selectedFruit"
-              >
-                <option value="random">A*</option>
-                <option value="random">BFS</option>
-                <option value="random">DFS</option>
-                <option value="random">Dijkstra</option>
-              </select>
-              <button
-                onClick={() => handleSearchPath()}
-                className="flex-1 uppercase custom-button"
-              >
-                Buscar
-              </button>
+          <div className="w-full flex gap-5">
+            <div className="w-full flex flex-col gap-2">
+              <label htmlFor="mazeAlgorithm">Heurística</label>
+              <div className="flex gap-5">
+                <select
+                  id="mazeAlgorithm"
+                  className="flex-1 custom-input"
+                  value={searchOptions.heuristic}
+                  onChange={(evt) =>
+                    setSearchOptions((prev) => ({
+                      ...prev,
+                      heuristic: evt.target.value as Heuristic,
+                    }))
+                  }
+                >
+                  <option value="manhattan">Distancia Manhattan</option>
+                  <option value="euclidean">Distancia Euclidiana</option>
+                </select>
+              </div>
             </div>
+
+            <div className="w-full flex flex-col gap-2">
+              <label htmlFor="velocity">Movimiento</label>
+              <select
+                id="velocity"
+                className="flex-1 custom-input"
+                value={searchOptions.movements}
+                onChange={(evt) =>
+                  setSearchOptions((prev) => ({
+                    ...prev,
+                    movements: evt.target.value as MovementType,
+                  }))
+                }
+              >
+                <option value="4dir">4 direcciones</option>
+                <option value="8dir">8 direcciones</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="w-full flex gap-5">
+            <div className="w-full flex flex-col gap-2">
+              <label htmlFor="mazeAlgorithm">Algoritmo de búsqueda</label>
+              <div className="flex gap-5">
+                <select
+                  id="mazeAlgorithm"
+                  className="flex-1 custom-input"
+                  value={searchAlgorithm}
+                  onChange={(evt) => setSearchAlgorithm(evt.target.value)}
+                  name="selectedFruit"
+                >
+                  <option value="random">A*</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col gap-2">
+              <label htmlFor="velocity">Velocidad</label>
+              <select
+                id="velocity"
+                className="flex-1 custom-input"
+                value={searchOptions.velocity}
+                onChange={(evt) =>
+                  setSearchOptions((prev) => ({
+                    ...prev,
+                    velocity: evt.target.value as Velocity,
+                  }))
+                }
+              >
+                <option value="slow">Lento</option>
+                <option value="normal">Normal</option>
+                <option value="fast">Rápido</option>
+                <option value="instant">Instantáneo</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => handleSearchPath()}
+              className="flex-1 uppercase custom-button"
+            >
+              Buscar
+            </button>
           </div>
         </div>
       </div>

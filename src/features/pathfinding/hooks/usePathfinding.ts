@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Cell } from "../models/Cell";
+import type { SearchOptions } from "../models/SearchOptions";
 
 export const usePathfinding = ({
   grid,
@@ -19,14 +20,18 @@ export const usePathfinding = ({
       { type: "module" },
     );
 
-    workerRef.current.onmessage = (e: MessageEvent) => {
-      console.log(e.data);
-    };
+    // workerRef.current.onmessage = (e: MessageEvent) => {
+    //   console.log(e.data);
+    // };
 
     return () => workerRef.current?.terminate();
   }, []);
 
-  const searchPath = (origin: number, target: number): Promise<Cell | null> => {
+  const searchPath = (
+    origin: number,
+    target: number,
+    options: SearchOptions,
+  ): Promise<Cell | null> => {
     return new Promise((resolve) => {
       if (!workerRef.current) return resolve(null);
 
@@ -45,6 +50,7 @@ export const usePathfinding = ({
         origin,
         target,
         gridSize,
+        options,
       });
     });
   };

@@ -4,10 +4,17 @@ import {
   getRowAndColFromIndex,
 } from "../../../lib/canvas";
 import { FRONTIER_CELL, VISITED_CELL } from "../constants/constants";
-import { isCellValid, isDiagonalMoveValid, isUnblocked } from "../lib/helpers";
-import { manhattanDistance } from "../lib/heuristic";
+import {
+  getDirections,
+  getHeuristic,
+  getVelocity,
+  isCellValid,
+  isDiagonalMoveValid,
+  isUnblocked,
+} from "../lib/helpers";
 import { Cell } from "../models/Cell";
 import { sleep } from "../../../lib/helpers";
+import type { SearchOptions } from "../models/SearchOptions";
 
 type Node = [number, number, number, number];
 
@@ -17,6 +24,7 @@ export const aStar = async (
   target: number,
   gridSize: number,
   onUpdateCell: (index: number, newValue: number) => void,
+  options: SearchOptions,
 ): Promise<Cell | null> => {
   const { row: startRow, col: startCol } = getRowAndColFromIndex(
     gridSize,
@@ -58,16 +66,13 @@ export const aStar = async (
     const index = getGridIndexFromRowAndCol(row, col, gridSize);
     onUpdateCell(index, VISITED_CELL);
 
-    await sleep(1);
+    if (options.velocity !== "instant") {
+      await sleep(getVelocity(options.velocity));
+    }
 
     closedList[row][col] = true;
 
-    const directions: number[][] = [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0],
-    ];
+    const directions: number[][] = getDirections(options.movements);
 
     for (const direction of directions) {
       const newRow = row + direction[0];
@@ -84,14 +89,22 @@ export const aStar = async (
           FRONTIER_CELL,
         );
 
-        await sleep(1);
+        if (options.velocity !== "instant") {
+          await sleep(getVelocity(options.velocity));
+        }
 
         if (newRow === targetRow && newCol === targetCol) {
           cellDetails[newRow][newCol].parent = cellDetails[row][col];
           return cellDetails[row][col];
         } else {
           const newGCost = cellDetails[row][col].gCost + 1.0;
-          const newHCost = manhattanDistance(newRow, newCol, target, gridSize);
+          const newHCost = getHeuristic(
+            newRow,
+            newCol,
+            target,
+            gridSize,
+            options.heuristic,
+          );
           const newFCost = newGCost + newHCost;
 
           if (
