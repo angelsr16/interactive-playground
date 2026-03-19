@@ -15,6 +15,24 @@ export const getCanvasContext = (canvas: HTMLCanvasElement) => {
   };
 };
 
+export const drawCircle = (
+  canvasContext: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  fillColor?: string,
+  lineWidth?: number,
+  strokeColor?: string,
+) => {
+  canvasContext.beginPath();
+  canvasContext.arc(x, y, radius, 0, 2 * Math.PI);
+  canvasContext.fillStyle = fillColor ? fillColor : "";
+  canvasContext.fill();
+  canvasContext.lineWidth = lineWidth ? lineWidth : 0;
+  canvasContext.strokeStyle = strokeColor ? strokeColor : "";
+  canvasContext.stroke();
+};
+
 export const drawText = (
   canvasContext: CanvasRenderingContext2D,
   text: string,

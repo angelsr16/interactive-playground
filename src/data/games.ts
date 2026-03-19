@@ -30,8 +30,16 @@ export const GAMES: Game[] = [
     id: "pathfinding",
     title: "Pathfinding Visualization",
     description:
-      "Entorno interactivo diseñado para la exploración de algoritmos de grafos. Permite a los usuarios generar laberintos procedurales o dibujarlos manualmente. Implementa un motor de búsqueda A* visual.",
+      "Entorno interactivo diseñado para la exploración de algoritmos de grafos. Permite generar laberintos procedurales o dibujarlos manualmente. Implementa un motor de búsqueda A* visual.",
     route: "/pathfinding",
+    tags: ["Tablero", "IA"],
+  },
+  {
+    id: "connect4",
+    title: "Connect 4",
+    description:
+      "Pon cuatro fichas en línea antes que tu rival. Juega contra la IA o contra un amigo — el motor usa Minimax con alpha-beta pruning.",
+    route: "/connect4",
     tags: ["Tablero", "IA"],
   },
 ];
