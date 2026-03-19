@@ -26,6 +26,14 @@ export const GAMES: Game[] = [
     route: "/eightpuzzle",
     tags: ["Tablero", "IA"],
   },
+  {
+    id: "pathfinding",
+    title: "Pathfinding Visualization",
+    description:
+      "Entorno interactivo diseñado para la exploración de algoritmos de grafos. Permite a los usuarios generar laberintos procedurales o dibujarlos manualmente. Implementa un motor de búsqueda A* visual.",
+    route: "/pathfinding",
+    tags: ["Tablero", "IA"],
+  },
 ];
 
 export const TAG_ALL = "Todos";

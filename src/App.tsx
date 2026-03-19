@@ -4,6 +4,7 @@ import { Home } from "./pages/Home";
 import { Header } from "./components/Header";
 import { EightPuzzlePage } from "./features/eightpuzzle";
 import { Background } from "./components/Background";
+import { PathfindingPage } from "./features/pathfinding";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/eightpuzzle" element={<EightPuzzlePage />} />
+            <Route path="/pathfinding" element={<PathfindingPage />} />
           </Routes>
         </div>
       </div>

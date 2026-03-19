@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { drawNoise } from "../lib/utils";
+import { drawNoise } from "../lib/backgroundUtils";
 
 export const Background = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);

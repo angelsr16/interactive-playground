@@ -86,6 +86,11 @@
     px-1.25 py-3 cursor-pointer text-sm duration-350 ease-in-out;
   }
 
+  .custom-button-active {
+    @apply font-semibold text-text-primary bg-plasma-400/70 border border-plasma/30 rounded-md
+    px-1.25 py-3 cursor-pointer text-sm duration-350 ease-in-out;
+  }
+
   .custom-input {
     @apply font-semibold text-text-primary bg-plasma-500/20 hover:bg-plasma-400/10 border border-border rounded-md
     px-1.25 py-3 text-sm duration-350 ease-in-out outline-none;

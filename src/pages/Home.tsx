@@ -87,7 +87,7 @@ export const Home = () => {
 
       {filtered.length > 0 ? (
         <section
-          className="grid gap-4"
+          className="grid gap-5"
           style={{
             gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
           }}
