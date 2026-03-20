@@ -7,12 +7,12 @@ import { PIECE_COLORS, type Player } from "../models/Player";
 
 export const useBoardCanvas = ({
   grid,
-  tryPlaceDisc,
   currentTurn,
+  onBoardClick,
 }: {
   grid: number[][];
-  tryPlaceDisc: (columnIndex: number) => void;
   currentTurn: Player;
+  onBoardClick: (columnIndex: number) => void;
 }) => {
   const boardDimensionsRef = useRef<BoardDimensions | null>(null);
   const hoveredColRef = useRef<number | null>(null);
@@ -101,8 +101,8 @@ export const useBoardCanvas = ({
 
   const handleMouseClick = useCallback(() => {
     if (hoveredColRef.current === null) return;
-    tryPlaceDisc(hoveredColRef.current);
-  }, [tryPlaceDisc]);
+    onBoardClick(hoveredColRef.current);
+  }, [onBoardClick]);
 
   return { canvasRef, handleMouseMove, handleMouseLeave, handleMouseClick };
 };

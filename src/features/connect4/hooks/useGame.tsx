@@ -1,20 +1,11 @@
 import { useState } from "react";
 import { getAvailableRowIndexFromCol } from "../lib/helpers";
-import { type PieceType, type Player } from "../models/Player";
+import { type PieceType, type Player, type PlayerType } from "../models/Player";
+import { RED_PLAYER, YELLOW_PLAYER } from "../lib/constants";
 
-type Cell = PieceType | 0;
+export type Cell = PieceType | 0;
 
-export const useGame = ({
-  redPlayer,
-  yellowPlayer,
-  winner,
-  setWinner,
-}: {
-  redPlayer: Player;
-  yellowPlayer: Player;
-  winner: Player | null;
-  setWinner: (player: Player | null) => void;
-}) => {
+export const useGame = () => {
   const [grid, setGrid] = useState<Cell[][]>([
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
@@ -24,6 +15,15 @@ export const useGame = ({
     [0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const [winner, setWinner] = useState<Player | null>(null);
+  const [redPlayer, setRedPlayer] = useState<Player>({
+    type: "human",
+    piece: RED_PLAYER,
+  });
+  const [yellowPlayer, setYellowPlayer] = useState<Player>({
+    type: "human",
+    piece: YELLOW_PLAYER,
+  });
   const [currentTurn, setCurrentTurn] = useState<Player>(redPlayer);
 
   const reset = () => {
@@ -36,10 +36,16 @@ export const useGame = ({
       [0, 0, 0, 0, 0, 0, 0],
     ]);
     setWinner(null);
+    setCurrentTurn(redPlayer);
   };
 
-  const tryPlaceDisc = (columnIndex: number) => {
-    if (winner !== null) return;
+  const canPlaceDisc = (player: Player, columnIndex: number): boolean => {
+    if (winner !== null && currentTurn === player) return false;
+    return getAvailableRowIndexFromCol(grid, columnIndex) !== -1;
+  };
+
+  const tryPlaceDisc = (player: Player, columnIndex: number) => {
+    if (winner !== null && currentTurn === player) return;
     const rowIndex = getAvailableRowIndexFromCol(grid, columnIndex);
     if (rowIndex > -1) {
       setGrid((prev) => {
@@ -114,10 +120,31 @@ export const useGame = ({
     return false;
   };
 
+  const updatePlayerType = (player: Player, type: PlayerType) => {
+    const isRed = player.piece === redPlayer.piece;
+
+    const updatedPlayer = { ...(isRed ? redPlayer : yellowPlayer), type };
+
+    if (isRed) {
+      setRedPlayer(updatedPlayer);
+    } else {
+      setYellowPlayer(updatedPlayer);
+    }
+
+    if (currentTurn.piece === player.piece) {
+      setCurrentTurn(updatedPlayer);
+    }
+  };
+
   return {
     grid,
+    canPlaceDisc,
     tryPlaceDisc,
     currentTurn,
     reset,
+
+    redPlayer,
+    yellowPlayer,
+    updatePlayerType,
   };
 };

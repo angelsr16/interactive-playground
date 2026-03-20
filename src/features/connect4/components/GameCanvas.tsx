@@ -1,40 +1,22 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
 import { useBoardCanvas } from "../hooks/useBoardCanvas";
-import { useGame } from "../hooks/useGame";
+import { type Cell } from "../hooks/useGame";
 import type { Player } from "../models/Player";
 
-export type GameCanvasHandle = {
-  handleResetGame: () => void;
-};
-
-export const GameCanvas = forwardRef<
-  GameCanvasHandle,
-  {
-    redPlayer: Player;
-    yellowPlayer: Player;
-  }
->(({ redPlayer, yellowPlayer }, ref) => {
-  const [winner, setWinner] = useState<Player | null>(null);
-
-  const { grid, tryPlaceDisc, currentTurn, reset } = useGame({
-    redPlayer,
-    yellowPlayer,
-    winner,
-    setWinner,
-  });
-
+export const GameCanvas = ({
+  grid,
+  currentTurn,
+  onBoardClick,
+}: {
+  grid: Cell[][];
+  currentTurn: Player;
+  onBoardClick: (columnIndex: number) => void;
+}) => {
   const { canvasRef, handleMouseMove, handleMouseLeave, handleMouseClick } =
     useBoardCanvas({
       grid,
-      tryPlaceDisc,
       currentTurn,
+      onBoardClick,
     });
-
-  useImperativeHandle(ref, () => ({
-    handleResetGame() {
-      reset();
-    },
-  }));
 
   return (
     <canvas
@@ -44,4 +26,4 @@ export const GameCanvas = forwardRef<
       onClick={handleMouseClick}
     />
   );
-});
+};
