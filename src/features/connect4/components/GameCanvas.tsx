@@ -1,18 +1,22 @@
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import { useBoardCanvas } from "../hooks/useBoardCanvas";
 import { useGame } from "../hooks/useGame";
 import type { Player } from "../models/Player";
 
-export const GameCanvas = ({
-  redPlayer,
-  yellowPlayer,
-}: {
-  redPlayer: Player;
-  yellowPlayer: Player;
-}) => {
+export type GameCanvasHandle = {
+  handleResetGame: () => void;
+};
+
+export const GameCanvas = forwardRef<
+  GameCanvasHandle,
+  {
+    redPlayer: Player;
+    yellowPlayer: Player;
+  }
+>(({ redPlayer, yellowPlayer }, ref) => {
   const [winner, setWinner] = useState<Player | null>(null);
 
-  const { grid, tryPlaceDisc, currentTurn } = useGame({
+  const { grid, tryPlaceDisc, currentTurn, reset } = useGame({
     redPlayer,
     yellowPlayer,
     winner,
@@ -26,6 +30,12 @@ export const GameCanvas = ({
       currentTurn,
     });
 
+  useImperativeHandle(ref, () => ({
+    handleResetGame() {
+      reset();
+    },
+  }));
+
   return (
     <canvas
       ref={canvasRef}
@@ -34,4 +44,4 @@ export const GameCanvas = ({
       onClick={handleMouseClick}
     />
   );
-};
+});

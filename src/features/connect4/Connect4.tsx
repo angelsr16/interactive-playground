@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { GameCanvas } from "./components/GameCanvas";
+import { useRef, useState } from "react";
+import { GameCanvas, type GameCanvasHandle } from "./components/GameCanvas";
 import { type Player } from "./models/Player";
 import { RED_PLAYER, YELLOW_PLAYER } from "./lib/constants";
 
@@ -9,6 +9,8 @@ const PIECE_BG_CLASSES = {
 } as const;
 
 export const Connect4 = () => {
+  const gameCanvasRef = useRef<GameCanvasHandle>(null);
+
   const [redPlayer, setRedPlayer] = useState<Player>({
     type: "human",
     piece: RED_PLAYER,
@@ -21,9 +23,13 @@ export const Connect4 = () => {
   return (
     <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-20">
       <div className="w-full place-self-center flex flex-col gap-4">
-        <GameCanvas redPlayer={redPlayer} yellowPlayer={yellowPlayer} />
+        <GameCanvas
+          ref={gameCanvasRef}
+          redPlayer={redPlayer}
+          yellowPlayer={yellowPlayer}
+        />
       </div>
-      <div className="bg-surface rounded-md">
+      <div className="bg-surface rounded-md p-5">
         <div className="w-full flex flex-col gap-2 p-5">
           <span className="flex items-center gap-2 font-bold">
             Jugador 1{" "}
@@ -31,12 +37,27 @@ export const Connect4 = () => {
           </span>
           <div className="w-full  flex gap-5">
             <button
-              onClick={() => setRedPlayer(redPlayer)}
-              className="w-full custom-button font-bold"
+              onClick={() =>
+                setRedPlayer((prev) => ({
+                  ...prev,
+                  type: "human",
+                }))
+              }
+              className={`w-full custom-button font-bold ${redPlayer.type === "human" ? "bg-plasma-400" : ""}`}
             >
-              HUMAN
+              HUMANO
             </button>
-            <button className="w-full custom-button font-bold">IA</button>
+            <button
+              onClick={() =>
+                setRedPlayer((prev) => ({
+                  ...prev,
+                  type: "ai",
+                }))
+              }
+              className={`w-full custom-button font-bold ${redPlayer.type === "ai" ? "bg-plasma-400" : ""}`}
+            >
+              IA
+            </button>
           </div>
         </div>
 
@@ -49,13 +70,37 @@ export const Connect4 = () => {
           </span>
           <div className="w-full  flex gap-5">
             <button
-              onClick={() => setYellowPlayer(redPlayer)}
-              className="w-full custom-button font-bold"
+              onClick={() =>
+                setYellowPlayer((prev) => ({
+                  ...prev,
+                  type: "human",
+                }))
+              }
+              className={`w-full custom-button font-bold ${yellowPlayer.type === "human" ? "bg-plasma-400" : ""}`}
             >
-              HUMAN
+              HUMANO
             </button>
-            <button className="w-full custom-button font-bold">IA</button>
+            <button
+              onClick={() =>
+                setYellowPlayer((prev) => ({
+                  ...prev,
+                  type: "ai",
+                }))
+              }
+              className={`w-full custom-button font-bold ${yellowPlayer.type === "ai" ? "bg-plasma-400" : ""}`}
+            >
+              IA
+            </button>
           </div>
+        </div>
+
+        <div className="w-full flex gap-5 mt-5">
+          <button
+            onClick={() => gameCanvasRef.current?.handleResetGame()}
+            className="w-full custom-button"
+          >
+            RESETEAR
+          </button>
         </div>
       </div>
     </div>

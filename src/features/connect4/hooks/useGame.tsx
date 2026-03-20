@@ -13,7 +13,7 @@ export const useGame = ({
   redPlayer: Player;
   yellowPlayer: Player;
   winner: Player | null;
-  setWinner: (player: Player) => void;
+  setWinner: (player: Player | null) => void;
 }) => {
   const [grid, setGrid] = useState<Cell[][]>([
     [0, 0, 0, 0, 0, 0, 0],
@@ -25,6 +25,18 @@ export const useGame = ({
   ]);
 
   const [currentTurn, setCurrentTurn] = useState<Player>(redPlayer);
+
+  const reset = () => {
+    setGrid([
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0],
+    ]);
+    setWinner(null);
+  };
 
   const tryPlaceDisc = (columnIndex: number) => {
     if (winner !== null) return;
@@ -106,5 +118,6 @@ export const useGame = ({
     grid,
     tryPlaceDisc,
     currentTurn,
+    reset,
   };
 };
