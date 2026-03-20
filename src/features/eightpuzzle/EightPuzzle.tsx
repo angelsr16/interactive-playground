@@ -16,6 +16,12 @@ export const EightPuzzle = () => {
     setCurrentPathIndex(0);
   };
 
+  const handleSolve = () => {
+    setPath([]);
+    setCurrentPathIndex(0);
+    solve();
+  };
+
   return (
     <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-20">
       <div className="w-full aspect-square place-self-center flex flex-col gap-4">
@@ -38,7 +44,7 @@ export const EightPuzzle = () => {
           </button>
 
           <button
-            onClick={() => solve()}
+            onClick={() => handleSolve()}
             className="custom-button flex-1 flex gap-2 justify-center items-center uppercase"
           >
             Resolver <TbRosetteDiscountCheckFilled size={18} />

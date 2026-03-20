@@ -3,13 +3,16 @@ import { drawCircle, getCanvasContext } from "../../../lib/canvas";
 import { useResizableCanvas } from "../../../hooks/useResizableCanvas";
 import { drawBoard, getAvailableRowIndexFromCol } from "../lib/helpers";
 import type { BoardDimensions } from "../models/BoardRect";
+import { PIECE_COLORS, type Player } from "../models/Player";
 
 export const useBoardCanvas = ({
   grid,
   tryPlaceDisc,
+  currentTurn,
 }: {
   grid: number[][];
   tryPlaceDisc: (columnIndex: number) => void;
+  currentTurn: Player;
 }) => {
   const boardDimensionsRef = useRef<BoardDimensions | null>(null);
   const hoveredColRef = useRef<number | null>(null);
@@ -84,10 +87,10 @@ export const useBoardCanvas = ({
         cx,
         cy,
         (cellSize / 2) * 0.8,
-        "rgba(255,0,0,0.4)",
+        `${PIECE_COLORS[currentTurn.piece]}40`,
       );
     },
-    [renderCanvas, canvasRef, grid],
+    [renderCanvas, canvasRef, grid, currentTurn],
   );
 
   const handleMouseLeave = useCallback(() => {

@@ -1,5 +1,6 @@
 import { drawCircle } from "../../../lib/canvas";
 import type { BoardDimensions } from "../models/BoardRect";
+import { PIECE_COLORS, type PieceType } from "../models/Player";
 
 export const drawBoard = (
   canvasContext: CanvasRenderingContext2D,
@@ -9,32 +10,39 @@ export const drawBoard = (
   cellSize: number,
 ) => {
   const radius = (cellSize / 2) * 0.8;
-
-  canvasContext.fillStyle = "#2657e3";
-  canvasContext.fillRect(0, 0, boardWidth, boardHeight);
-  canvasContext.globalCompositeOperation = "destination-out";
-
-  for (let col = 0; col < 7; col++) {
-    for (let row = 0; row < 6; row++) {
-      const x = cellSize * col + cellSize / 2;
-      const y = cellSize * row + cellSize / 2;
-      drawCircle(canvasContext, x, y, radius);
-    }
-  }
+  canvasContext.clearRect(0, 0, boardWidth, boardHeight);
 
   canvasContext.globalCompositeOperation = "source-over";
-
-  for (let col = 0; col < 7; col++) {
-    for (let row = 0; row < 6; row++) {
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 7; col++) {
       const cell = grid[row][col];
-      if (cell === 0) continue;
-
-      const x = cellSize * col + cellSize / 2;
-      const y = cellSize * row + cellSize / 2;
-      const color = cell === 1 ? "#FF2A00" : "#FBFF00";
-      drawCircle(canvasContext, x, y, radius, color);
+      if (cell !== 0) {
+        const x = cellSize * col + cellSize / 2;
+        const y = cellSize * row + cellSize / 2;
+        const color = PIECE_COLORS[cell as PieceType];
+        drawCircle(canvasContext, x, y, radius, color);
+      }
     }
   }
+
+  canvasContext.fillStyle = "#1e2330";
+
+  canvasContext.globalCompositeOperation = "destination-over";
+  canvasContext.fillRect(0, 0, boardWidth, boardHeight);
+
+  canvasContext.globalCompositeOperation = "destination-out";
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 7; col++) {
+      if (grid[row][col] === 0) {
+        const x = cellSize * col + cellSize / 2;
+        const y = cellSize * row + cellSize / 2;
+        drawCircle(canvasContext, x, y, radius);
+      }
+    }
+  }
+
+  // Always reset to default
+  canvasContext.globalCompositeOperation = "source-over";
 };
 
 export const getColumnIndex = (
