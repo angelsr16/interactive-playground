@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { getAvailableRowIndexFromCol } from "../lib/helpers";
-import { type PieceType, type Player, type PlayerType } from "../models/Player";
+import { type Player, type PlayerType } from "../models/Player";
 import { RED_PLAYER, YELLOW_PLAYER } from "../lib/constants";
-
-export type Cell = PieceType | 0;
+import type { Cell } from "../models/Board";
+import { getAvailableRow } from "../lib/helpers";
 
 export const useGame = () => {
-  const [grid, setGrid] = useState<Cell[][]>([
+  const [board, setBoard] = useState<Cell[][]>([
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
@@ -14,7 +13,6 @@ export const useGame = () => {
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
   ]);
-
   const [winner, setWinner] = useState<Player | null>(null);
   const [redPlayer, setRedPlayer] = useState<Player>({
     type: "human",
@@ -27,7 +25,7 @@ export const useGame = () => {
   const [currentTurn, setCurrentTurn] = useState<Player>(redPlayer);
 
   const reset = () => {
-    setGrid([
+    setBoard([
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0],
@@ -41,14 +39,14 @@ export const useGame = () => {
 
   const canPlaceDisc = (player: Player, columnIndex: number): boolean => {
     if (winner !== null && currentTurn === player) return false;
-    return getAvailableRowIndexFromCol(grid, columnIndex) !== -1;
+    return getAvailableRow(board, columnIndex) !== -1;
   };
 
   const tryPlaceDisc = (player: Player, columnIndex: number) => {
     if (winner !== null && currentTurn === player) return;
-    const rowIndex = getAvailableRowIndexFromCol(grid, columnIndex);
+    const rowIndex = getAvailableRow(board, columnIndex);
     if (rowIndex > -1) {
-      setGrid((prev) => {
+      setBoard((prev) => {
         const next = prev.map((row) => [...row]);
         next[rowIndex][columnIndex] = currentTurn.piece;
         if (checkWinner(next)) {
@@ -56,7 +54,6 @@ export const useGame = () => {
         }
         return next;
       });
-
       if (currentTurn === redPlayer) {
         setCurrentTurn(yellowPlayer);
       } else {
@@ -68,12 +65,10 @@ export const useGame = () => {
   const checkWinner = (grid: Cell[][]): boolean => {
     const rows = grid.length;
     const cols = grid[0].length;
-
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const cell = grid[row][col];
         if (cell === 0) continue;
-
         if (
           col + 3 < cols &&
           cell === grid[row][col + 1] &&
@@ -82,7 +77,6 @@ export const useGame = () => {
         ) {
           return true;
         }
-
         // 2. Check Vertical (Down)
         if (
           row + 3 < rows &&
@@ -92,7 +86,6 @@ export const useGame = () => {
         ) {
           return true;
         }
-
         // 3. Check Diagonal (Down-Right)
         if (
           row + 3 < rows &&
@@ -103,7 +96,6 @@ export const useGame = () => {
         ) {
           return true;
         }
-
         // 4. Check Diagonal (Up-Right)
         if (
           row - 3 >= 0 &&
@@ -116,33 +108,28 @@ export const useGame = () => {
         }
       }
     }
-
     return false;
   };
 
   const updatePlayerType = (player: Player, type: PlayerType) => {
     const isRed = player.piece === redPlayer.piece;
-
     const updatedPlayer = { ...(isRed ? redPlayer : yellowPlayer), type };
-
     if (isRed) {
       setRedPlayer(updatedPlayer);
     } else {
       setYellowPlayer(updatedPlayer);
     }
-
     if (currentTurn.piece === player.piece) {
       setCurrentTurn(updatedPlayer);
     }
   };
 
   return {
-    grid,
+    board,
     canPlaceDisc,
     tryPlaceDisc,
     currentTurn,
     reset,
-
     redPlayer,
     yellowPlayer,
     updatePlayerType,

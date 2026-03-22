@@ -2,8 +2,9 @@ import { GameCanvas } from "./components/GameCanvas";
 import { useGame } from "./hooks/useGame";
 import { useAI } from "./hooks/useAI";
 import { GameControls } from "./components/GameControls";
+import type { GridPosition } from "./models/Board";
 
-export const Connect4 = () => {
+export const TresEnRaya = () => {
   const {
     board,
     canPlaceDisc,
@@ -11,7 +12,7 @@ export const Connect4 = () => {
     currentTurn,
     reset,
     redPlayer,
-    yellowPlayer,
+    bluePlayer,
     updatePlayerType,
   } = useGame();
 
@@ -21,15 +22,15 @@ export const Connect4 = () => {
     canPlaceDisc,
     tryPlaceDisc,
     redPlayer,
-    yellowPlayer,
+    bluePlayer,
   });
 
-  const handleOnClick = (columnIndex: number) => {
+  const handleOnClick = (gridPosition: GridPosition) => {
     if (
       currentTurn.type === "human" &&
-      canPlaceDisc(currentTurn, columnIndex)
+      canPlaceDisc(currentTurn, gridPosition)
     ) {
-      tryPlaceDisc(currentTurn, columnIndex);
+      tryPlaceDisc(currentTurn, gridPosition);
     }
   };
 
@@ -44,8 +45,8 @@ export const Connect4 = () => {
       </div>
       <div className="bg-surface rounded-md p-5">
         <GameControls
+          bluePlayer={bluePlayer}
           redPlayer={redPlayer}
-          yellowPlayer={yellowPlayer}
           updatePlayerType={updatePlayerType}
           reset={reset}
         />

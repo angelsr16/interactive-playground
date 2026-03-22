@@ -1,48 +1,16 @@
-import { drawCircle } from "../../../lib/canvas";
+import type { Board, Cell } from "../models/Board";
 import type { BoardDimensions } from "../models/BoardRect";
-import { PIECE_COLORS, type PieceType } from "../models/Player";
 
-export const drawBoard = (
-  canvasContext: CanvasRenderingContext2D,
-  grid: number[][],
-  boardWidth: number,
-  boardHeight: number,
-  cellSize: number,
-) => {
-  const radius = (cellSize / 2) * 0.8;
-  canvasContext.clearRect(0, 0, boardWidth, boardHeight);
+export type TTEntry = {
+  depth: number;
+  score: number;
+  flag: "EXACT" | "LOWERBOUND" | "UPPERBOUND";
+};
 
-  canvasContext.globalCompositeOperation = "source-over";
-  for (let row = 0; row < 6; row++) {
-    for (let col = 0; col < 7; col++) {
-      const cell = grid[row][col];
-      if (cell !== 0) {
-        const x = cellSize * col + cellSize / 2;
-        const y = cellSize * row + cellSize / 2;
-        const color = PIECE_COLORS[cell as PieceType];
-        drawCircle(canvasContext, x, y, radius, color);
-      }
-    }
-  }
+export const cloneBoard = (board: Board): Board => board.map((row) => [...row]);
 
-  canvasContext.fillStyle = "#1e2330";
-
-  canvasContext.globalCompositeOperation = "destination-over";
-  canvasContext.fillRect(0, 0, boardWidth, boardHeight);
-
-  canvasContext.globalCompositeOperation = "destination-out";
-  for (let row = 0; row < 6; row++) {
-    for (let col = 0; col < 7; col++) {
-      if (grid[row][col] === 0) {
-        const x = cellSize * col + cellSize / 2;
-        const y = cellSize * row + cellSize / 2;
-        drawCircle(canvasContext, x, y, radius);
-      }
-    }
-  }
-
-  // Always reset to default
-  canvasContext.globalCompositeOperation = "source-over";
+export const hashBoard = (board: Board): string => {
+  return board.flat().join("");
 };
 
 export const getColumnIndex = (
@@ -55,14 +23,36 @@ export const getColumnIndex = (
   Math.floor(mouseXPosition / cellSize);
 };
 
-export const getAvailableRowIndexFromCol = (
-  grid: number[][],
-  columnIndex: number,
-) => {
-  for (let rowIndex = grid.length - 1; rowIndex >= 0; rowIndex--) {
-    const cell = grid[rowIndex][columnIndex];
-    if (cell === 0) return rowIndex;
+export const getAvailableRow = (board: Board, col: number): number => {
+  for (let row = 5; row >= 0; row--) {
+    if (board[row][col] === 0) return row;
   }
-
   return -1;
+};
+
+export const applyMove = (
+  board: Board,
+  row: number,
+  col: number,
+  player: Cell,
+): Board => {
+  const newBoard = cloneBoard(board);
+  newBoard[row][col] = player;
+  return newBoard;
+};
+
+export const getEmptyCell = (
+  window: Cell[],
+  baseRow: number,
+  baseCol: number,
+  dr: number,
+  dc: number,
+): { row: number; col: number } | undefined => {
+  const emptyIndex = window.findIndex((c) => c === 0);
+  if (emptyIndex === -1) return undefined;
+
+  return {
+    row: baseRow + dr * emptyIndex,
+    col: baseCol + dc * emptyIndex,
+  };
 };

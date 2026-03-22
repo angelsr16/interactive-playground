@@ -1,23 +1,21 @@
 import { useCallback, useRef } from "react";
-import { drawCircle, getCanvasContext } from "../../../lib/canvas";
+import { drawRect, getCanvasContext } from "../../../lib/canvas";
 import { useResizableCanvas } from "../../../hooks/useResizableCanvas";
 import type { BoardDimensions } from "../models/BoardRect";
-import { PIECE_COLORS, type Player } from "../models/Player";
+import { type Player } from "../models/Player";
 import { drawBoard } from "../lib/canvas";
-import { getAvailableRow } from "../lib/helpers";
-import type { Board } from "../models/Board";
+import type { Board, GridPosition } from "../models/Board";
 
 export const useBoardCanvas = ({
   grid,
-  currentTurn,
   onBoardClick,
 }: {
   grid: Board;
   currentTurn: Player;
-  onBoardClick: (columnIndex: number) => void;
+  onBoardClick: (position: GridPosition) => void;
 }) => {
   const boardDimensionsRef = useRef<BoardDimensions | null>(null);
-  const hoveredColRef = useRef<number | null>(null);
+  const hoveredCell = useRef<GridPosition | null>(null);
 
   const renderCanvas = useCallback(
     (canvas: HTMLCanvasElement) => {
@@ -29,12 +27,12 @@ export const useBoardCanvas = ({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, logicalSize, logicalSize);
 
-      const horizontalSpacing = logicalSize / 7;
-      const verticalSpacing = logicalSize / 6;
+      const horizontalSpacing = logicalSize / 3;
+      const verticalSpacing = logicalSize / 3;
       const cellSize = Math.min(horizontalSpacing, verticalSpacing);
 
-      const boardWidth = cellSize * 7;
-      const boardHeight = cellSize * 6;
+      const boardWidth = cellSize * 3;
+      const boardHeight = cellSize * 3;
 
       drawBoard(ctx, grid, boardWidth, boardHeight, cellSize);
 
@@ -43,9 +41,7 @@ export const useBoardCanvas = ({
         x: 0,
         width: logicalSize,
         height: logicalSize,
-        cellSize,
-        horizontalSpacing,
-        verticalSpacing,
+        cellSize
       };
     },
     [grid],
@@ -58,19 +54,28 @@ export const useBoardCanvas = ({
       const boardDimensions = boardDimensionsRef.current;
       if (!boardDimensions) return;
 
-      const { x, cellSize } = boardDimensions;
+      const { x, y, cellSize } = boardDimensions;
 
       const mouseXPosition = e.nativeEvent.offsetX - x;
+      const mouseYPosition = e.nativeEvent.offsetY - y;
       const hoveredColumn = Math.floor(mouseXPosition / cellSize);
+      const hoveredRow = Math.floor(mouseYPosition / cellSize);
 
       if (
-        (hoveredColumn < 0 || hoveredColumn >= 7) &&
-        getAvailableRow(grid, hoveredColumn) > -1
+        (hoveredColumn < 0 || hoveredColumn >= 3) &&
+        (hoveredRow < 0 || hoveredRow >= 3)
       )
         return;
-      if (hoveredColumn === hoveredColRef.current) return;
 
-      hoveredColRef.current = hoveredColumn;
+      if (
+        hoveredCell.current &&
+        hoveredColumn === hoveredCell.current.x &&
+        hoveredRow === hoveredCell.current.y
+      ) {
+        return;
+      }
+
+      hoveredCell.current = { x: hoveredColumn, y: hoveredRow };
 
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -79,29 +84,31 @@ export const useBoardCanvas = ({
       const canvasContext = getCanvasContext(canvas);
       if (!canvasContext) return;
 
-      const cx = cellSize * hoveredColumn + cellSize / 2;
-      const cy = cellSize * getAvailableRow(grid, hoveredColumn) + cellSize / 2;
-
-      drawCircle(
-        canvasContext.ctx,
-        cx,
-        cy,
-        (cellSize / 2) * 0.8,
-        `${PIECE_COLORS[currentTurn.piece]}40`,
-      );
+      if (grid[hoveredRow][hoveredColumn] === 0) {
+        const xPosition = hoveredColumn * cellSize;
+        const yPosition = hoveredRow * cellSize;
+        drawRect(
+          canvasContext.ctx,
+          xPosition,
+          yPosition,
+          cellSize,
+          cellSize,
+          "#ffffff10",
+        );
+      }
     },
-    [renderCanvas, canvasRef, grid, currentTurn],
+    [canvasRef, renderCanvas, grid],
   );
 
   const handleMouseLeave = useCallback(() => {
-    hoveredColRef.current = null;
+    hoveredCell.current = null;
     const canvas = canvasRef.current;
     if (canvas) renderCanvas(canvas);
   }, [renderCanvas, canvasRef]);
 
   const handleMouseClick = useCallback(() => {
-    if (hoveredColRef.current === null) return;
-    onBoardClick(hoveredColRef.current);
+    if (hoveredCell.current === null) return;
+    onBoardClick(hoveredCell.current);
   }, [onBoardClick]);
 
   return { canvasRef, handleMouseMove, handleMouseLeave, handleMouseClick };

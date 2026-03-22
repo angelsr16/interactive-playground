@@ -1,5 +1,5 @@
 import { useBoardCanvas } from "../hooks/useBoardCanvas";
-import type { Board } from "../models/Board";
+import type { Board, GridPosition } from "../models/Board";
 import type { Player } from "../models/Player";
 
 export const GameCanvas = ({
@@ -9,7 +9,7 @@ export const GameCanvas = ({
 }: {
   grid: Board;
   currentTurn: Player;
-  onBoardClick: (columnIndex: number) => void;
+  onBoardClick: (gridPosition: GridPosition) => void;
 }) => {
   const { canvasRef, handleMouseMove, handleMouseLeave, handleMouseClick } =
     useBoardCanvas({

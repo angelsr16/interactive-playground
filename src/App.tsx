@@ -6,6 +6,7 @@ import { EightPuzzlePage } from "./features/eightpuzzle";
 import { Background } from "./components/Background";
 import { PathfindingPage } from "./features/pathfinding";
 import { Connect4Page } from "./features/connect4";
+import { TresEnRayaPage } from "./features/tresenraya";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/eightpuzzle" element={<EightPuzzlePage />} />
             <Route path="/pathfinding" element={<PathfindingPage />} />
             <Route path="/connect4" element={<Connect4Page />} />
+            <Route path="/tresenraya" element={<TresEnRayaPage />} />
           </Routes>
         </div>
       </div>

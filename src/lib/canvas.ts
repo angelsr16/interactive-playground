@@ -50,6 +50,18 @@ export const drawText = (
   canvasContext.fillText(text, x, y);
 };
 
+export const drawRect = (
+  canvasContext: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  fillColor?: string,
+) => {
+  canvasContext.fillStyle = fillColor ? fillColor : '';
+  canvasContext.fillRect(x, y, width, height);
+};
+
 export const drawRoundedRect = (
   canvasContext: CanvasRenderingContext2D,
   x: number,
@@ -63,6 +75,25 @@ export const drawRoundedRect = (
   canvasContext.beginPath();
   canvasContext.roundRect(x, y, width, height, radius);
   canvasContext.fill();
+  canvasContext.closePath();
+};
+
+export const drawLine = (
+  canvasContext: CanvasRenderingContext2D,
+  startX: number,
+  startY: number,
+  endX: number,
+  endY: number,
+  lineWidth?: number,
+  color?: string,
+) => {
+  canvasContext.beginPath();
+  canvasContext.lineWidth = lineWidth ? lineWidth : 1;
+  canvasContext.strokeStyle = color ? color : "#000";
+  canvasContext.moveTo(startX, startY);
+  canvasContext.lineTo(endX, endY);
+  canvasContext.stroke();
+  canvasContext.closePath();
 };
 
 export const getGridIndexFromClick = (

@@ -36,12 +36,28 @@ export const GAMES: Game[] = [
   },
   {
     id: "connect4",
-    title: "Connect 4",
+    title: "Conecta 4",
     description:
       "Pon cuatro fichas en línea antes que tu rival. Juega contra la IA o contra un amigo — el motor usa Minimax con alpha-beta pruning.",
     route: "/connect4",
     tags: ["Tablero", "IA"],
   },
+  {
+    id: "tresenraya",
+    title: "Tres en Raya",
+    description:
+      "Pon cuatro fichas en línea antes que tu rival. Juega contra la IA o contra un amigo — el motor usa Minimax con alpha-beta pruning.",
+    route: "/tresenraya",
+    tags: ["Tablero", "IA"],
+  },
+  // {
+  //   id: "connect4AI",
+  //   title: "Connect 4 AI",
+  //   description:
+  //     "Pon cuatro fichas en línea antes que tu rival. Juega contra la IA o contra un amigo — el motor usa Minimax con alpha-beta pruning.",
+  //   route: "/connect4-ai",
+  //   tags: ["Tablero", "IA"],
+  // },
 ];
 
 export const TAG_ALL = "Todos";
